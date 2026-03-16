@@ -1,0 +1,128 @@
+syntax = "proto3";
+
+package clusteragent.v1;
+
+option go_package = "github.com/0x0BSoD/mcp-k8s/proto/gen/clusteragentpb";
+
+import "google/protobuf/timestamp.proto";
+
+// ─── Shared types ─────────────────────────────────────────────────────────────
+
+message OwnerRef {
+  string kind = 1;
+  string name = 2;
+  string uid  = 3;
+}
+
+message NormalizedEvent {
+  string    cluster_name          = 1;
+  string    namespace             = 2;
+  string    involved_object_kind  = 3;
+  string    involved_object_name  = 4;
+  string    involved_object_uid   = 5;
+  repeated OwnerRef owner_chain   = 6;
+  string    reason                = 7;
+  string    message               = 8;
+  int32     count                 = 9;
+  google.protobuf.Timestamp first_seen = 10;
+  google.protobuf.Timestamp last_seen  = 11;
+}
+
+message ObjectSnapshot {
+  string namespace  = 1;
+  string kind       = 2;
+  string name       = 3;
+  string uid        = 4;
+  string phase      = 5; // e.g. Running, Pending, Failed
+  map<string, string> labels = 6;
+  map<string, string> annotations = 7;
+  repeated OwnerRef owner_chain = 8;
+  string raw_status_json = 9; // serialized .status for deeper inspection
+}
+
+// ─── ListEvents ───────────────────────────────────────────────────────────────
+
+message ListEventsRequest {
+  string namespace    = 1; // empty = all namespaces
+  string reason       = 2; // empty = all reasons
+  google.protobuf.Timestamp since = 3; // zero = no lower bound
+  int32  limit        = 4; // 0 = no limit
+}
+
+message ListEventsResponse {
+  repeated NormalizedEvent events = 1;
+}
+
+// ─── GetEventsForObject ───────────────────────────────────────────────────────
+
+message GetEventsForObjectRequest {
+  string namespace = 1;
+  string kind      = 2;
+  string name      = 3;
+}
+
+message GetEventsForObjectResponse {
+  repeated NormalizedEvent events = 1;
+}
+
+// ─── GetNamespaceSummary ──────────────────────────────────────────────────────
+
+message GetNamespaceSummaryRequest {
+  string namespace = 1;
+  google.protobuf.Timestamp since = 2;
+}
+
+message NamespaceEventGroup {
+  string reason             = 1;
+  int32  total_count        = 2;
+  repeated string objects   = 3; // involved object names
+  google.protobuf.Timestamp last_seen = 4;
+}
+
+message GetNamespaceSummaryResponse {
+  string namespace                       = 1;
+  repeated NamespaceEventGroup groups    = 2;
+}
+
+// ─── ResolveOwnerChain ────────────────────────────────────────────────────────
+
+message ResolveOwnerChainRequest {
+  string namespace = 1;
+  string kind      = 2;
+  string name      = 3;
+}
+
+message ResolveOwnerChainResponse {
+  repeated OwnerRef chain = 1; // ordered leaf → root
+}
+
+// ─── GetObjectSnapshot ────────────────────────────────────────────────────────
+
+message GetObjectSnapshotRequest {
+  string namespace = 1;
+  string kind      = 2;
+  string name      = 3;
+}
+
+message GetObjectSnapshotResponse {
+  ObjectSnapshot snapshot = 1;
+}
+
+// ─── Service ──────────────────────────────────────────────────────────────────
+
+service ClusterAgentService {
+  // Return events from the local store, optionally filtered.
+  rpc ListEvents(ListEventsRequest) returns (ListEventsResponse);
+
+  // Return all events for a specific object (by kind+name).
+  rpc GetEventsForObject(GetEventsForObjectRequest) returns (GetEventsForObjectResponse);
+
+  // Return a grouped summary of events in a namespace.
+  rpc GetNamespaceSummary(GetNamespaceSummaryRequest) returns (GetNamespaceSummaryResponse);
+
+  // Walk ownerReferences and return the full chain for an object.
+  rpc ResolveOwnerChain(ResolveOwnerChainRequest) returns (ResolveOwnerChainResponse);
+
+  // Return a snapshot of an object's current state.
+  rpc GetObjectSnapshot(GetObjectSnapshotRequest) returns (GetObjectSnapshotResponse);
+}
