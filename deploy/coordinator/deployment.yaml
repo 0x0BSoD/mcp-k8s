@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
         - name: coordinator
-          image: mcp-coordinator:latest
-          imagePullPolicy: IfNotPresent
+          image: ttl.sh/mcp-k8s/coordinator:1h
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8080

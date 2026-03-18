@@ -10,6 +10,8 @@ import (
 	"github.com/0x0BSoD/mcp-k8s/pkg/store"
 	pb "github.com/0x0BSoD/mcp-k8s/proto/gen/clusteragentpb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 )
@@ -63,6 +65,11 @@ func (a *ClusterAgent) Run(ctx context.Context) error {
 
 	srv := grpc.NewServer()
 	pb.RegisterClusterAgentServiceServer(srv, newGRPCServer(eventStore, enricher))
+
+	// Standard gRPC health protocol — required for Kubernetes gRPC probes.
+	healthSrv := health.NewServer()
+	grpc_health_v1.RegisterHealthServer(srv, healthSrv)
+	healthSrv.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
 
 	slog.Info("gRPC server listening", "addr", a.cfg.GRPCAddr)
 

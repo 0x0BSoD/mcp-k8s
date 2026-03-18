@@ -18,15 +18,15 @@ spec:
       serviceAccountName: mcp-cluster-agent
       containers:
         - name: agent
-          image: mcp-cluster-agent:latest
-          imagePullPolicy: IfNotPresent
+          image: ttl.sh/mcp-k8s/cluster-agent:1h
+          imagePullPolicy: Always
           ports:
             - name: grpc
               containerPort: 50051
               protocol: TCP
           env:
             - name: MCP_CLUSTER_NAME
-              value: "change-me"          # override per cluster
+              value: "minikube"          # override per cluster
             - name: MCP_GRPC_ADDR
               value: ":50051"
             - name: MCP_WATCH_NAMESPACE

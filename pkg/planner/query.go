@@ -6,16 +6,16 @@ import "time"
 type Intent int
 
 const (
-	// IntentUnknown: planner falls back to heuristics based on available params.
+	// IntentUnknown planner falls back to heuristics based on available params.
 	IntentUnknown Intent = iota
-	// IntentNamespaceOverview: high-level view of what is happening in a namespace.
+	// IntentNamespaceOverview high-level view of what is happening in a namespace.
 	IntentNamespaceOverview
-	// IntentExplainObjectIssue: why is a specific object unhealthy?
+	// IntentExplainObjectIssue why is a specific object unhealthy?
 	// Requires ObjectKind + ObjectName.
 	IntentExplainObjectIssue
-	// IntentExplainRestarts: why are pods restarting in a namespace?
+	// IntentExplainRestarts why are pods restarting in a namespace?
 	IntentExplainRestarts
-	// IntentBuildTimeline: all events for a namespace over a time range, ordered.
+	// IntentBuildTimeline all events for a namespace over a time range, ordered.
 	IntentBuildTimeline
 )
 
