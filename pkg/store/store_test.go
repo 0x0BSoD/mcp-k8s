@@ -176,6 +176,58 @@ func TestStore_UpsertUpdatesInPlace(t *testing.T) {
 	}
 }
 
+func TestStore_BurstEpisodesKeptSeparately(t *testing.T) {
+	s := New(100)
+	now := time.Unix(5000, 0)
+
+	// First burst: BackOff, count climbs 1→5
+	s.Add(makeEvent("ns", "uid-1", "BackOff", now, 1))
+	s.Add(makeEvent("ns", "uid-1", "BackOff", now.Add(time.Minute), 5))
+	if s.Len() != 1 {
+		t.Fatalf("expected 1 entry after in-burst updates, got %d", s.Len())
+	}
+
+	// Second burst: count resets to 1 after a gap → new episode
+	later := now.Add(10 * time.Minute)
+	e2 := makeEvent("ns", "uid-1", "BackOff", later, 1)
+	e2.FirstSeen = later
+	s.Add(e2)
+	if s.Len() != 2 {
+		t.Fatalf("expected 2 entries after second burst, got %d", s.Len())
+	}
+
+	got := s.Query(Filter{ObjectUID: "uid-1", Reason: "BackOff"})
+	if len(got) != 2 {
+		t.Fatalf("expected 2 burst episodes in query, got %d", len(got))
+	}
+}
+
+func TestStore_BurstCapEnforced(t *testing.T) {
+	s := New(100)
+	now := time.Unix(6000, 0)
+
+	// Add maxBurstsPerKey+2 separate burst episodes (count resets each time).
+	for i := 0; i < maxBurstsPerKey+2; i++ {
+		t0 := now.Add(time.Duration(i) * 10 * time.Minute)
+		e := makeEvent("ns", "uid-x", "BackOff", t0, 1)
+		e.FirstSeen = t0
+		s.Add(e)
+	}
+
+	got := s.Query(Filter{ObjectUID: "uid-x", Reason: "BackOff"})
+	if len(got) > maxBurstsPerKey+2 {
+		t.Errorf("expected at most %d burst episodes tracked, got %d", maxBurstsPerKey+2, len(got))
+	}
+	// History slice must not exceed cap.
+	key := dedupKey{objectUID: "uid-x", reason: "BackOff"}
+	s.mu.RLock()
+	histLen := len(s.dedupIdx[key])
+	s.mu.RUnlock()
+	if histLen > maxBurstsPerKey {
+		t.Errorf("dedup history len %d exceeds cap %d", histLen, maxBurstsPerKey)
+	}
+}
+
 func TestStore_SummarizeNamespace(t *testing.T) {
 	s := New(100)
 	now := time.Now()
