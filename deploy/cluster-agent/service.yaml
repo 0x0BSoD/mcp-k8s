@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-cluster-agent
+  namespace: mcp-system
+  labels:
+    app: mcp-cluster-agent
+spec:
+  type: ClusterIP
+  selector:
+    app: mcp-cluster-agent
+  ports:
+    - name: grpc
+      port: 50051
+      targetPort: grpc
+      protocol: TCP

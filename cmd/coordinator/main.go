@@ -17,12 +17,12 @@ func main() {
 
 	app, err := coordinator.New()
 	if err != nil {
-		slog.Error("create coordinator err:", err)
+		slog.Error("create coordinator", "err", err)
 		os.Exit(1)
 	}
 
 	if err := app.Run(ctx); err != nil {
-		slog.Error("run err:", err)
+		slog.Error("run", "err", err)
 		os.Exit(1)
 	}
 }
