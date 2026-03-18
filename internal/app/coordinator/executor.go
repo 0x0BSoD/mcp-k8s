@@ -3,6 +3,7 @@ package coordinator
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/0x0BSoD/mcp-k8s/pkg/events"
@@ -13,9 +14,12 @@ import (
 
 // ExecutionResult aggregates everything collected by executing a Plan.
 type ExecutionResult struct {
-	Events    []events.NormalizedEvent
-	Snapshots []*pb.ObjectSnapshot
-	Chains    [][]*pb.OwnerRef
+	Events             []events.NormalizedEvent
+	Snapshots          []*pb.ObjectSnapshot
+	Chains             [][]*pb.OwnerRef
+	NamespaceSummaries []*pb.NamespaceEventGroup
+	// StepErrors holds per-step failures. Non-empty means results are partial.
+	StepErrors []string
 }
 
 // Executor runs a planner.Plan against the appropriate cluster agent.
@@ -36,9 +40,9 @@ func (e *Executor) Execute(ctx context.Context, plan planner.Plan) (ExecutionRes
 
 	for _, step := range plan.Steps {
 		if err := e.runStep(ctx, client, step, &result); err != nil {
-			// Non-fatal: log-worthy but keep going with partial results.
-			// The coordinator will correlate whatever it got.
-			_ = fmt.Errorf("step %s failed (continuing): %w", step.Method, err)
+			msg := fmt.Sprintf("step %s failed: %s", step.Method, err.Error())
+			slog.Warn(msg, "cluster", plan.ClusterName)
+			result.StepErrors = append(result.StepErrors, msg)
 		}
 	}
 	return result, nil
@@ -70,9 +74,14 @@ func (e *Executor) runStep(ctx context.Context, client pb.ClusterAgentServiceCli
 		result.Events = append(result.Events, fromProtoEvents(resp.Events)...)
 
 	case planner.MethodGetNamespaceSummary:
-		// Summary is rolled into events by fetching the underlying events from
-		// ListEvents. GetNamespaceSummary is more useful in the response layer;
-		// here we skip it to avoid duplicating events.
+		resp, err := client.GetNamespaceSummary(ctx, &pb.GetNamespaceSummaryRequest{
+			Namespace: step.Namespace,
+			Since:     toTimestampPB(step.Since),
+		})
+		if err != nil {
+			return err
+		}
+		result.NamespaceSummaries = append(result.NamespaceSummaries, resp.Groups...)
 
 	case planner.MethodResolveOwnerChain:
 		resp, err := client.ResolveOwnerChain(ctx, &pb.ResolveOwnerChainRequest{

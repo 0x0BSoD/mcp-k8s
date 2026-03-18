@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/0x0BSoD/mcp-k8s/pkg/correlation"
+	pb "github.com/0x0BSoD/mcp-k8s/proto/gen/clusteragentpb"
 )
 
 type ResponseMode string
@@ -15,6 +16,14 @@ const (
 	ResponseModeConcise         ResponseMode = "concise"
 	ResponseModeIncidentSummary ResponseMode = "incident-summary"
 )
+
+// NamespaceSummaryLine is a single reason-group entry from GetNamespaceSummary.
+type NamespaceSummaryLine struct {
+	Reason     string    `json:"reason"`
+	TotalCount int32     `json:"total_count"`
+	Objects    []string  `json:"objects"`
+	LastSeen   time.Time `json:"last_seen"`
+}
 
 // EventLine is a single row in the rendered timeline.
 type EventLine struct {
@@ -31,12 +40,15 @@ type EventLine struct {
 
 // Response is the final coordinator output, serialised to the caller.
 type Response struct {
-	ClusterName     string       `json:"cluster"`
-	Mode            ResponseMode `json:"mode"`
-	Timeline        []EventLine  `json:"timeline"`
-	RootCauses      []EventLine  `json:"root_causes"`
-	AffectedObjects []string     `json:"affected_objects,omitempty"`
-	Summary         string       `json:"summary,omitempty"`
+	ClusterName      string                 `json:"cluster"`
+	Mode             ResponseMode           `json:"mode"`
+	NamespaceSummary []NamespaceSummaryLine `json:"namespace_summary,omitempty"`
+	Timeline         []EventLine            `json:"timeline"`
+	RootCauses       []EventLine            `json:"root_causes"`
+	AffectedObjects  []string               `json:"affected_objects,omitempty"`
+	Summary          string                 `json:"summary,omitempty"`
+	// Warnings lists any step-level failures; non-empty means results are partial.
+	Warnings []string `json:"warnings,omitempty"`
 }
 
 // ResponseBuilder formats a correlation.Timeline into a Response.
@@ -47,8 +59,10 @@ func NewResponseBuilder() *ResponseBuilder { return &ResponseBuilder{} }
 // Build renders the timeline according to the requested mode.
 func (rb *ResponseBuilder) Build(clusterName string, mode ResponseMode, tl correlation.Timeline, result ExecutionResult) Response {
 	resp := Response{
-		ClusterName: clusterName,
-		Mode:        mode,
+		ClusterName:      clusterName,
+		Mode:             mode,
+		Warnings:         result.StepErrors,
+		NamespaceSummary: toNamespaceSummaryLines(result.NamespaceSummaries),
 	}
 
 	switch mode {
@@ -98,6 +112,26 @@ func affectedObjects(tl correlation.Timeline) []string {
 	out := make([]string, 0, len(seen))
 	for k := range seen {
 		out = append(out, k)
+	}
+	return out
+}
+
+func toNamespaceSummaryLines(groups []*pb.NamespaceEventGroup) []NamespaceSummaryLine {
+	if len(groups) == 0 {
+		return nil
+	}
+	out := make([]NamespaceSummaryLine, len(groups))
+	for i, g := range groups {
+		var lastSeen time.Time
+		if g.LastSeen != nil {
+			lastSeen = g.LastSeen.AsTime()
+		}
+		out[i] = NamespaceSummaryLine{
+			Reason:     g.Reason,
+			TotalCount: g.TotalCount,
+			Objects:    g.Objects,
+			LastSeen:   lastSeen,
+		}
 	}
 	return out
 }

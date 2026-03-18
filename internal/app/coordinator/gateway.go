@@ -100,7 +100,12 @@ func (g *gateway) handleQuery(w http.ResponseWriter, r *http.Request) {
 	mode := parseMode(req.Mode)
 	resp := g.builder.Build(req.ClusterName, mode, timeline, result)
 
-	writeJSON(w, http.StatusOK, resp)
+	status := http.StatusOK
+	if len(result.StepErrors) > 0 && len(result.Events) == 0 && len(result.Snapshots) == 0 {
+		// All steps failed, nothing collected — signal partial/failed response.
+		status = http.StatusMultiStatus
+	}
+	writeJSON(w, status, resp)
 }
 
 func (g *gateway) handleRegister(w http.ResponseWriter, r *http.Request) {
