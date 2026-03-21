@@ -12,12 +12,21 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// ContainerLogEntry pairs pod/container identity with fetched log text.
+type ContainerLogEntry struct {
+	Pod       string
+	Container string
+	Logs      string
+}
+
 // ExecutionResult aggregates everything collected by executing a Plan.
 type ExecutionResult struct {
 	Events             []events.NormalizedEvent
 	Snapshots          []*pb.ObjectSnapshot
 	Chains             [][]*pb.OwnerRef
 	NamespaceSummaries []*pb.NamespaceEventGroup
+	ContainerLogs      []ContainerLogEntry
+	PodMetrics         []*pb.PodMetrics
 	// StepErrors holds per-step failures. Non-empty means results are partial.
 	StepErrors []string
 }
@@ -106,6 +115,32 @@ func (e *Executor) runStep(ctx context.Context, client pb.ClusterAgentServiceCli
 		if resp.Snapshot != nil {
 			result.Snapshots = append(result.Snapshots, resp.Snapshot)
 		}
+
+	case planner.MethodGetContainerLogs:
+		resp, err := client.GetContainerLogs(ctx, &pb.GetContainerLogsRequest{
+			Namespace: step.Namespace,
+			Pod:       step.Name,
+			Container: step.Container,
+			TailLines: step.TailLines,
+		})
+		if err != nil {
+			return err
+		}
+		result.ContainerLogs = append(result.ContainerLogs, ContainerLogEntry{
+			Pod:       resp.Pod,
+			Container: resp.Container,
+			Logs:      resp.Logs,
+		})
+
+	case planner.MethodGetPodMetrics:
+		resp, err := client.GetPodMetrics(ctx, &pb.GetPodMetricsRequest{
+			Namespace: step.Namespace,
+			Pod:       step.Name,
+		})
+		if err != nil {
+			return err
+		}
+		result.PodMetrics = append(result.PodMetrics, resp.Pods...)
 
 	default:
 		return fmt.Errorf("unknown method: %s", step.Method)

@@ -28,16 +28,41 @@ message NormalizedEvent {
   google.protobuf.Timestamp last_seen  = 11;
 }
 
+// ContainerStatus carries structured state for one container in a Pod.
+message ContainerStatus {
+  string name                       = 1;
+  bool   ready                      = 2;
+  int32  restart_count              = 3;
+  string state                      = 4; // running | waiting | terminated
+  string reason                     = 5; // e.g. CrashLoopBackOff, OOMKilled, Error
+  int32  last_termination_exit_code = 6;
+  string last_termination_reason    = 7;
+  string last_termination_message   = 8; // truncated to 256 chars
+}
+
+// WorkloadCondition mirrors a Kubernetes condition entry for workload objects.
+message WorkloadCondition {
+  string type    = 1; // e.g. Available, Progressing, ReplicaFailure
+  string status  = 2; // True | False | Unknown
+  string reason  = 3;
+  string message = 4;
+}
+
 message ObjectSnapshot {
   string namespace  = 1;
   string kind       = 2;
   string name       = 3;
   string uid        = 4;
-  string phase      = 5; // e.g. Running, Pending, Failed
+  string phase      = 5; // e.g. Running, Pending, Failed, Degraded
   map<string, string> labels = 6;
   map<string, string> annotations = 7;
   repeated OwnerRef owner_chain = 8;
   string raw_status_json = 9; // serialized .status for deeper inspection
+
+  // Structured container state (pods only).
+  repeated ContainerStatus container_statuses = 10;
+  // Structured condition list (Deployment, StatefulSet, DaemonSet, Job).
+  repeated WorkloadCondition workload_conditions = 11;
 }
 
 // ─── ListEvents ───────────────────────────────────────────────────────────────
@@ -108,6 +133,45 @@ message GetObjectSnapshotResponse {
   ObjectSnapshot snapshot = 1;
 }
 
+// ─── GetPodMetrics ────────────────────────────────────────────────────────────
+
+message ContainerMetrics {
+  string name            = 1;
+  int64  cpu_millicores  = 2; // CPU usage in millicores
+  int64  memory_bytes    = 3; // Memory usage in bytes
+}
+
+message PodMetrics {
+  string namespace                    = 1;
+  string pod                          = 2;
+  repeated ContainerMetrics containers = 3;
+  google.protobuf.Timestamp timestamp  = 4;
+}
+
+message GetPodMetricsRequest {
+  string namespace = 1; // empty = all namespaces
+  string pod       = 2; // empty = all pods in namespace
+}
+
+message GetPodMetricsResponse {
+  repeated PodMetrics pods = 1;
+}
+
+// ─── GetContainerLogs ─────────────────────────────────────────────────────────
+
+message GetContainerLogsRequest {
+  string namespace  = 1;
+  string pod        = 2;
+  string container  = 3;
+  int32  tail_lines = 4; // 0 = default (50)
+}
+
+message GetContainerLogsResponse {
+  string pod       = 1;
+  string container = 2;
+  string logs      = 3; // last N lines joined by newline
+}
+
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 service ClusterAgentService {
@@ -125,4 +189,10 @@ service ClusterAgentService {
 
   // Return a snapshot of an object's current state.
   rpc GetObjectSnapshot(GetObjectSnapshotRequest) returns (GetObjectSnapshotResponse);
+
+  // Return the last N log lines for a container.
+  rpc GetContainerLogs(GetContainerLogsRequest) returns (GetContainerLogsResponse);
+
+  // Return CPU/memory usage for pods via metrics-server.
+  rpc GetPodMetrics(GetPodMetricsRequest) returns (GetPodMetricsResponse);
 }

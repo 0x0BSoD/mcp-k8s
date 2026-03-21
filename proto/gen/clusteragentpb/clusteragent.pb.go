@@ -206,24 +206,198 @@ func (x *NormalizedEvent) GetLastSeen() *timestamppb.Timestamp {
 	return nil
 }
 
+// ContainerStatus carries structured state for one container in a Pod.
+type ContainerStatus struct {
+	state                   protoimpl.MessageState `protogen:"open.v1"`
+	Name                    string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Ready                   bool                   `protobuf:"varint,2,opt,name=ready,proto3" json:"ready,omitempty"`
+	RestartCount            int32                  `protobuf:"varint,3,opt,name=restart_count,json=restartCount,proto3" json:"restart_count,omitempty"`
+	State                   string                 `protobuf:"bytes,4,opt,name=state,proto3" json:"state,omitempty"`   // running | waiting | terminated
+	Reason                  string                 `protobuf:"bytes,5,opt,name=reason,proto3" json:"reason,omitempty"` // e.g. CrashLoopBackOff, OOMKilled, Error
+	LastTerminationExitCode int32                  `protobuf:"varint,6,opt,name=last_termination_exit_code,json=lastTerminationExitCode,proto3" json:"last_termination_exit_code,omitempty"`
+	LastTerminationReason   string                 `protobuf:"bytes,7,opt,name=last_termination_reason,json=lastTerminationReason,proto3" json:"last_termination_reason,omitempty"`
+	LastTerminationMessage  string                 `protobuf:"bytes,8,opt,name=last_termination_message,json=lastTerminationMessage,proto3" json:"last_termination_message,omitempty"` // truncated to 256 chars
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *ContainerStatus) Reset() {
+	*x = ContainerStatus{}
+	mi := &file_clusteragent_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ContainerStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ContainerStatus) ProtoMessage() {}
+
+func (x *ContainerStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_clusteragent_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ContainerStatus.ProtoReflect.Descriptor instead.
+func (*ContainerStatus) Descriptor() ([]byte, []int) {
+	return file_clusteragent_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ContainerStatus) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ContainerStatus) GetReady() bool {
+	if x != nil {
+		return x.Ready
+	}
+	return false
+}
+
+func (x *ContainerStatus) GetRestartCount() int32 {
+	if x != nil {
+		return x.RestartCount
+	}
+	return 0
+}
+
+func (x *ContainerStatus) GetState() string {
+	if x != nil {
+		return x.State
+	}
+	return ""
+}
+
+func (x *ContainerStatus) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+func (x *ContainerStatus) GetLastTerminationExitCode() int32 {
+	if x != nil {
+		return x.LastTerminationExitCode
+	}
+	return 0
+}
+
+func (x *ContainerStatus) GetLastTerminationReason() string {
+	if x != nil {
+		return x.LastTerminationReason
+	}
+	return ""
+}
+
+func (x *ContainerStatus) GetLastTerminationMessage() string {
+	if x != nil {
+		return x.LastTerminationMessage
+	}
+	return ""
+}
+
+// WorkloadCondition mirrors a Kubernetes condition entry for workload objects.
+type WorkloadCondition struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Type          string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`     // e.g. Available, Progressing, ReplicaFailure
+	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"` // True | False | Unknown
+	Reason        string                 `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
+	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WorkloadCondition) Reset() {
+	*x = WorkloadCondition{}
+	mi := &file_clusteragent_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WorkloadCondition) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WorkloadCondition) ProtoMessage() {}
+
+func (x *WorkloadCondition) ProtoReflect() protoreflect.Message {
+	mi := &file_clusteragent_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WorkloadCondition.ProtoReflect.Descriptor instead.
+func (*WorkloadCondition) Descriptor() ([]byte, []int) {
+	return file_clusteragent_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *WorkloadCondition) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *WorkloadCondition) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *WorkloadCondition) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+func (x *WorkloadCondition) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 type ObjectSnapshot struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Namespace     string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
 	Kind          string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
 	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	Uid           string                 `protobuf:"bytes,4,opt,name=uid,proto3" json:"uid,omitempty"`
-	Phase         string                 `protobuf:"bytes,5,opt,name=phase,proto3" json:"phase,omitempty"` // e.g. Running, Pending, Failed
+	Phase         string                 `protobuf:"bytes,5,opt,name=phase,proto3" json:"phase,omitempty"` // e.g. Running, Pending, Failed, Degraded
 	Labels        map[string]string      `protobuf:"bytes,6,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Annotations   map[string]string      `protobuf:"bytes,7,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	OwnerChain    []*OwnerRef            `protobuf:"bytes,8,rep,name=owner_chain,json=ownerChain,proto3" json:"owner_chain,omitempty"`
 	RawStatusJson string                 `protobuf:"bytes,9,opt,name=raw_status_json,json=rawStatusJson,proto3" json:"raw_status_json,omitempty"` // serialized .status for deeper inspection
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Structured container state (pods only).
+	ContainerStatuses []*ContainerStatus `protobuf:"bytes,10,rep,name=container_statuses,json=containerStatuses,proto3" json:"container_statuses,omitempty"`
+	// Structured condition list (Deployment, StatefulSet, DaemonSet, Job).
+	WorkloadConditions []*WorkloadCondition `protobuf:"bytes,11,rep,name=workload_conditions,json=workloadConditions,proto3" json:"workload_conditions,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *ObjectSnapshot) Reset() {
 	*x = ObjectSnapshot{}
-	mi := &file_clusteragent_proto_msgTypes[2]
+	mi := &file_clusteragent_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -235,7 +409,7 @@ func (x *ObjectSnapshot) String() string {
 func (*ObjectSnapshot) ProtoMessage() {}
 
 func (x *ObjectSnapshot) ProtoReflect() protoreflect.Message {
-	mi := &file_clusteragent_proto_msgTypes[2]
+	mi := &file_clusteragent_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -248,7 +422,7 @@ func (x *ObjectSnapshot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ObjectSnapshot.ProtoReflect.Descriptor instead.
 func (*ObjectSnapshot) Descriptor() ([]byte, []int) {
-	return file_clusteragent_proto_rawDescGZIP(), []int{2}
+	return file_clusteragent_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ObjectSnapshot) GetNamespace() string {
@@ -314,6 +488,20 @@ func (x *ObjectSnapshot) GetRawStatusJson() string {
 	return ""
 }
 
+func (x *ObjectSnapshot) GetContainerStatuses() []*ContainerStatus {
+	if x != nil {
+		return x.ContainerStatuses
+	}
+	return nil
+}
+
+func (x *ObjectSnapshot) GetWorkloadConditions() []*WorkloadCondition {
+	if x != nil {
+		return x.WorkloadConditions
+	}
+	return nil
+}
+
 type ListEventsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Namespace     string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"` // empty = all namespaces
@@ -326,7 +514,7 @@ type ListEventsRequest struct {
 
 func (x *ListEventsRequest) Reset() {
 	*x = ListEventsRequest{}
-	mi := &file_clusteragent_proto_msgTypes[3]
+	mi := &file_clusteragent_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -338,7 +526,7 @@ func (x *ListEventsRequest) String() string {
 func (*ListEventsRequest) ProtoMessage() {}
 
 func (x *ListEventsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clusteragent_proto_msgTypes[3]
+	mi := &file_clusteragent_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -351,7 +539,7 @@ func (x *ListEventsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListEventsRequest.ProtoReflect.Descriptor instead.
 func (*ListEventsRequest) Descriptor() ([]byte, []int) {
-	return file_clusteragent_proto_rawDescGZIP(), []int{3}
+	return file_clusteragent_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ListEventsRequest) GetNamespace() string {
@@ -391,7 +579,7 @@ type ListEventsResponse struct {
 
 func (x *ListEventsResponse) Reset() {
 	*x = ListEventsResponse{}
-	mi := &file_clusteragent_proto_msgTypes[4]
+	mi := &file_clusteragent_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -403,7 +591,7 @@ func (x *ListEventsResponse) String() string {
 func (*ListEventsResponse) ProtoMessage() {}
 
 func (x *ListEventsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clusteragent_proto_msgTypes[4]
+	mi := &file_clusteragent_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -416,7 +604,7 @@ func (x *ListEventsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListEventsResponse.ProtoReflect.Descriptor instead.
 func (*ListEventsResponse) Descriptor() ([]byte, []int) {
-	return file_clusteragent_proto_rawDescGZIP(), []int{4}
+	return file_clusteragent_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ListEventsResponse) GetEvents() []*NormalizedEvent {
@@ -437,7 +625,7 @@ type GetEventsForObjectRequest struct {
 
 func (x *GetEventsForObjectRequest) Reset() {
 	*x = GetEventsForObjectRequest{}
-	mi := &file_clusteragent_proto_msgTypes[5]
+	mi := &file_clusteragent_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -449,7 +637,7 @@ func (x *GetEventsForObjectRequest) String() string {
 func (*GetEventsForObjectRequest) ProtoMessage() {}
 
 func (x *GetEventsForObjectRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clusteragent_proto_msgTypes[5]
+	mi := &file_clusteragent_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -462,7 +650,7 @@ func (x *GetEventsForObjectRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEventsForObjectRequest.ProtoReflect.Descriptor instead.
 func (*GetEventsForObjectRequest) Descriptor() ([]byte, []int) {
-	return file_clusteragent_proto_rawDescGZIP(), []int{5}
+	return file_clusteragent_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetEventsForObjectRequest) GetNamespace() string {
@@ -495,7 +683,7 @@ type GetEventsForObjectResponse struct {
 
 func (x *GetEventsForObjectResponse) Reset() {
 	*x = GetEventsForObjectResponse{}
-	mi := &file_clusteragent_proto_msgTypes[6]
+	mi := &file_clusteragent_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -507,7 +695,7 @@ func (x *GetEventsForObjectResponse) String() string {
 func (*GetEventsForObjectResponse) ProtoMessage() {}
 
 func (x *GetEventsForObjectResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clusteragent_proto_msgTypes[6]
+	mi := &file_clusteragent_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -520,7 +708,7 @@ func (x *GetEventsForObjectResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEventsForObjectResponse.ProtoReflect.Descriptor instead.
 func (*GetEventsForObjectResponse) Descriptor() ([]byte, []int) {
-	return file_clusteragent_proto_rawDescGZIP(), []int{6}
+	return file_clusteragent_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetEventsForObjectResponse) GetEvents() []*NormalizedEvent {
@@ -540,7 +728,7 @@ type GetNamespaceSummaryRequest struct {
 
 func (x *GetNamespaceSummaryRequest) Reset() {
 	*x = GetNamespaceSummaryRequest{}
-	mi := &file_clusteragent_proto_msgTypes[7]
+	mi := &file_clusteragent_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -552,7 +740,7 @@ func (x *GetNamespaceSummaryRequest) String() string {
 func (*GetNamespaceSummaryRequest) ProtoMessage() {}
 
 func (x *GetNamespaceSummaryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clusteragent_proto_msgTypes[7]
+	mi := &file_clusteragent_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -565,7 +753,7 @@ func (x *GetNamespaceSummaryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNamespaceSummaryRequest.ProtoReflect.Descriptor instead.
 func (*GetNamespaceSummaryRequest) Descriptor() ([]byte, []int) {
-	return file_clusteragent_proto_rawDescGZIP(), []int{7}
+	return file_clusteragent_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetNamespaceSummaryRequest) GetNamespace() string {
@@ -594,7 +782,7 @@ type NamespaceEventGroup struct {
 
 func (x *NamespaceEventGroup) Reset() {
 	*x = NamespaceEventGroup{}
-	mi := &file_clusteragent_proto_msgTypes[8]
+	mi := &file_clusteragent_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -606,7 +794,7 @@ func (x *NamespaceEventGroup) String() string {
 func (*NamespaceEventGroup) ProtoMessage() {}
 
 func (x *NamespaceEventGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_clusteragent_proto_msgTypes[8]
+	mi := &file_clusteragent_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -619,7 +807,7 @@ func (x *NamespaceEventGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NamespaceEventGroup.ProtoReflect.Descriptor instead.
 func (*NamespaceEventGroup) Descriptor() ([]byte, []int) {
-	return file_clusteragent_proto_rawDescGZIP(), []int{8}
+	return file_clusteragent_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *NamespaceEventGroup) GetReason() string {
@@ -660,7 +848,7 @@ type GetNamespaceSummaryResponse struct {
 
 func (x *GetNamespaceSummaryResponse) Reset() {
 	*x = GetNamespaceSummaryResponse{}
-	mi := &file_clusteragent_proto_msgTypes[9]
+	mi := &file_clusteragent_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -672,7 +860,7 @@ func (x *GetNamespaceSummaryResponse) String() string {
 func (*GetNamespaceSummaryResponse) ProtoMessage() {}
 
 func (x *GetNamespaceSummaryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clusteragent_proto_msgTypes[9]
+	mi := &file_clusteragent_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -685,7 +873,7 @@ func (x *GetNamespaceSummaryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNamespaceSummaryResponse.ProtoReflect.Descriptor instead.
 func (*GetNamespaceSummaryResponse) Descriptor() ([]byte, []int) {
-	return file_clusteragent_proto_rawDescGZIP(), []int{9}
+	return file_clusteragent_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetNamespaceSummaryResponse) GetNamespace() string {
@@ -713,7 +901,7 @@ type ResolveOwnerChainRequest struct {
 
 func (x *ResolveOwnerChainRequest) Reset() {
 	*x = ResolveOwnerChainRequest{}
-	mi := &file_clusteragent_proto_msgTypes[10]
+	mi := &file_clusteragent_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -725,7 +913,7 @@ func (x *ResolveOwnerChainRequest) String() string {
 func (*ResolveOwnerChainRequest) ProtoMessage() {}
 
 func (x *ResolveOwnerChainRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clusteragent_proto_msgTypes[10]
+	mi := &file_clusteragent_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -738,7 +926,7 @@ func (x *ResolveOwnerChainRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolveOwnerChainRequest.ProtoReflect.Descriptor instead.
 func (*ResolveOwnerChainRequest) Descriptor() ([]byte, []int) {
-	return file_clusteragent_proto_rawDescGZIP(), []int{10}
+	return file_clusteragent_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ResolveOwnerChainRequest) GetNamespace() string {
@@ -771,7 +959,7 @@ type ResolveOwnerChainResponse struct {
 
 func (x *ResolveOwnerChainResponse) Reset() {
 	*x = ResolveOwnerChainResponse{}
-	mi := &file_clusteragent_proto_msgTypes[11]
+	mi := &file_clusteragent_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -783,7 +971,7 @@ func (x *ResolveOwnerChainResponse) String() string {
 func (*ResolveOwnerChainResponse) ProtoMessage() {}
 
 func (x *ResolveOwnerChainResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clusteragent_proto_msgTypes[11]
+	mi := &file_clusteragent_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -796,7 +984,7 @@ func (x *ResolveOwnerChainResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolveOwnerChainResponse.ProtoReflect.Descriptor instead.
 func (*ResolveOwnerChainResponse) Descriptor() ([]byte, []int) {
-	return file_clusteragent_proto_rawDescGZIP(), []int{11}
+	return file_clusteragent_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ResolveOwnerChainResponse) GetChain() []*OwnerRef {
@@ -817,7 +1005,7 @@ type GetObjectSnapshotRequest struct {
 
 func (x *GetObjectSnapshotRequest) Reset() {
 	*x = GetObjectSnapshotRequest{}
-	mi := &file_clusteragent_proto_msgTypes[12]
+	mi := &file_clusteragent_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -829,7 +1017,7 @@ func (x *GetObjectSnapshotRequest) String() string {
 func (*GetObjectSnapshotRequest) ProtoMessage() {}
 
 func (x *GetObjectSnapshotRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clusteragent_proto_msgTypes[12]
+	mi := &file_clusteragent_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -842,7 +1030,7 @@ func (x *GetObjectSnapshotRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetObjectSnapshotRequest.ProtoReflect.Descriptor instead.
 func (*GetObjectSnapshotRequest) Descriptor() ([]byte, []int) {
-	return file_clusteragent_proto_rawDescGZIP(), []int{12}
+	return file_clusteragent_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetObjectSnapshotRequest) GetNamespace() string {
@@ -875,7 +1063,7 @@ type GetObjectSnapshotResponse struct {
 
 func (x *GetObjectSnapshotResponse) Reset() {
 	*x = GetObjectSnapshotResponse{}
-	mi := &file_clusteragent_proto_msgTypes[13]
+	mi := &file_clusteragent_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -887,7 +1075,7 @@ func (x *GetObjectSnapshotResponse) String() string {
 func (*GetObjectSnapshotResponse) ProtoMessage() {}
 
 func (x *GetObjectSnapshotResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clusteragent_proto_msgTypes[13]
+	mi := &file_clusteragent_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -900,7 +1088,7 @@ func (x *GetObjectSnapshotResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetObjectSnapshotResponse.ProtoReflect.Descriptor instead.
 func (*GetObjectSnapshotResponse) Descriptor() ([]byte, []int) {
-	return file_clusteragent_proto_rawDescGZIP(), []int{13}
+	return file_clusteragent_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetObjectSnapshotResponse) GetSnapshot() *ObjectSnapshot {
@@ -908,6 +1096,358 @@ func (x *GetObjectSnapshotResponse) GetSnapshot() *ObjectSnapshot {
 		return x.Snapshot
 	}
 	return nil
+}
+
+type ContainerMetrics struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	CpuMillicores int64                  `protobuf:"varint,2,opt,name=cpu_millicores,json=cpuMillicores,proto3" json:"cpu_millicores,omitempty"` // CPU usage in millicores
+	MemoryBytes   int64                  `protobuf:"varint,3,opt,name=memory_bytes,json=memoryBytes,proto3" json:"memory_bytes,omitempty"`       // Memory usage in bytes
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ContainerMetrics) Reset() {
+	*x = ContainerMetrics{}
+	mi := &file_clusteragent_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ContainerMetrics) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ContainerMetrics) ProtoMessage() {}
+
+func (x *ContainerMetrics) ProtoReflect() protoreflect.Message {
+	mi := &file_clusteragent_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ContainerMetrics.ProtoReflect.Descriptor instead.
+func (*ContainerMetrics) Descriptor() ([]byte, []int) {
+	return file_clusteragent_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *ContainerMetrics) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ContainerMetrics) GetCpuMillicores() int64 {
+	if x != nil {
+		return x.CpuMillicores
+	}
+	return 0
+}
+
+func (x *ContainerMetrics) GetMemoryBytes() int64 {
+	if x != nil {
+		return x.MemoryBytes
+	}
+	return 0
+}
+
+type PodMetrics struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Namespace     string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	Pod           string                 `protobuf:"bytes,2,opt,name=pod,proto3" json:"pod,omitempty"`
+	Containers    []*ContainerMetrics    `protobuf:"bytes,3,rep,name=containers,proto3" json:"containers,omitempty"`
+	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PodMetrics) Reset() {
+	*x = PodMetrics{}
+	mi := &file_clusteragent_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PodMetrics) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PodMetrics) ProtoMessage() {}
+
+func (x *PodMetrics) ProtoReflect() protoreflect.Message {
+	mi := &file_clusteragent_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PodMetrics.ProtoReflect.Descriptor instead.
+func (*PodMetrics) Descriptor() ([]byte, []int) {
+	return file_clusteragent_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *PodMetrics) GetNamespace() string {
+	if x != nil {
+		return x.Namespace
+	}
+	return ""
+}
+
+func (x *PodMetrics) GetPod() string {
+	if x != nil {
+		return x.Pod
+	}
+	return ""
+}
+
+func (x *PodMetrics) GetContainers() []*ContainerMetrics {
+	if x != nil {
+		return x.Containers
+	}
+	return nil
+}
+
+func (x *PodMetrics) GetTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Timestamp
+	}
+	return nil
+}
+
+type GetPodMetricsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Namespace     string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"` // empty = all namespaces
+	Pod           string                 `protobuf:"bytes,2,opt,name=pod,proto3" json:"pod,omitempty"`             // empty = all pods in namespace
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPodMetricsRequest) Reset() {
+	*x = GetPodMetricsRequest{}
+	mi := &file_clusteragent_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPodMetricsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPodMetricsRequest) ProtoMessage() {}
+
+func (x *GetPodMetricsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_clusteragent_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPodMetricsRequest.ProtoReflect.Descriptor instead.
+func (*GetPodMetricsRequest) Descriptor() ([]byte, []int) {
+	return file_clusteragent_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *GetPodMetricsRequest) GetNamespace() string {
+	if x != nil {
+		return x.Namespace
+	}
+	return ""
+}
+
+func (x *GetPodMetricsRequest) GetPod() string {
+	if x != nil {
+		return x.Pod
+	}
+	return ""
+}
+
+type GetPodMetricsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Pods          []*PodMetrics          `protobuf:"bytes,1,rep,name=pods,proto3" json:"pods,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPodMetricsResponse) Reset() {
+	*x = GetPodMetricsResponse{}
+	mi := &file_clusteragent_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPodMetricsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPodMetricsResponse) ProtoMessage() {}
+
+func (x *GetPodMetricsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_clusteragent_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPodMetricsResponse.ProtoReflect.Descriptor instead.
+func (*GetPodMetricsResponse) Descriptor() ([]byte, []int) {
+	return file_clusteragent_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *GetPodMetricsResponse) GetPods() []*PodMetrics {
+	if x != nil {
+		return x.Pods
+	}
+	return nil
+}
+
+type GetContainerLogsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Namespace     string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	Pod           string                 `protobuf:"bytes,2,opt,name=pod,proto3" json:"pod,omitempty"`
+	Container     string                 `protobuf:"bytes,3,opt,name=container,proto3" json:"container,omitempty"`
+	TailLines     int32                  `protobuf:"varint,4,opt,name=tail_lines,json=tailLines,proto3" json:"tail_lines,omitempty"` // 0 = default (50)
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetContainerLogsRequest) Reset() {
+	*x = GetContainerLogsRequest{}
+	mi := &file_clusteragent_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetContainerLogsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetContainerLogsRequest) ProtoMessage() {}
+
+func (x *GetContainerLogsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_clusteragent_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetContainerLogsRequest.ProtoReflect.Descriptor instead.
+func (*GetContainerLogsRequest) Descriptor() ([]byte, []int) {
+	return file_clusteragent_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *GetContainerLogsRequest) GetNamespace() string {
+	if x != nil {
+		return x.Namespace
+	}
+	return ""
+}
+
+func (x *GetContainerLogsRequest) GetPod() string {
+	if x != nil {
+		return x.Pod
+	}
+	return ""
+}
+
+func (x *GetContainerLogsRequest) GetContainer() string {
+	if x != nil {
+		return x.Container
+	}
+	return ""
+}
+
+func (x *GetContainerLogsRequest) GetTailLines() int32 {
+	if x != nil {
+		return x.TailLines
+	}
+	return 0
+}
+
+type GetContainerLogsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Pod           string                 `protobuf:"bytes,1,opt,name=pod,proto3" json:"pod,omitempty"`
+	Container     string                 `protobuf:"bytes,2,opt,name=container,proto3" json:"container,omitempty"`
+	Logs          string                 `protobuf:"bytes,3,opt,name=logs,proto3" json:"logs,omitempty"` // last N lines joined by newline
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetContainerLogsResponse) Reset() {
+	*x = GetContainerLogsResponse{}
+	mi := &file_clusteragent_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetContainerLogsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetContainerLogsResponse) ProtoMessage() {}
+
+func (x *GetContainerLogsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_clusteragent_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetContainerLogsResponse.ProtoReflect.Descriptor instead.
+func (*GetContainerLogsResponse) Descriptor() ([]byte, []int) {
+	return file_clusteragent_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *GetContainerLogsResponse) GetPod() string {
+	if x != nil {
+		return x.Pod
+	}
+	return ""
+}
+
+func (x *GetContainerLogsResponse) GetContainer() string {
+	if x != nil {
+		return x.Container
+	}
+	return ""
+}
+
+func (x *GetContainerLogsResponse) GetLogs() string {
+	if x != nil {
+		return x.Logs
+	}
+	return ""
 }
 
 var File_clusteragent_proto protoreflect.FileDescriptor
@@ -933,7 +1473,21 @@ const file_clusteragent_proto_rawDesc = "" +
 	"\n" +
 	"first_seen\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\tfirstSeen\x127\n" +
-	"\tlast_seen\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\blastSeen\"\xf6\x03\n" +
+	"\tlast_seen\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\blastSeen\"\xbd\x02\n" +
+	"\x0fContainerStatus\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
+	"\x05ready\x18\x02 \x01(\bR\x05ready\x12#\n" +
+	"\rrestart_count\x18\x03 \x01(\x05R\frestartCount\x12\x14\n" +
+	"\x05state\x18\x04 \x01(\tR\x05state\x12\x16\n" +
+	"\x06reason\x18\x05 \x01(\tR\x06reason\x12;\n" +
+	"\x1alast_termination_exit_code\x18\x06 \x01(\x05R\x17lastTerminationExitCode\x126\n" +
+	"\x17last_termination_reason\x18\a \x01(\tR\x15lastTerminationReason\x128\n" +
+	"\x18last_termination_message\x18\b \x01(\tR\x16lastTerminationMessage\"q\n" +
+	"\x11WorkloadCondition\x12\x12\n" +
+	"\x04type\x18\x01 \x01(\tR\x04type\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\x12\x16\n" +
+	"\x06reason\x18\x03 \x01(\tR\x06reason\x12\x18\n" +
+	"\amessage\x18\x04 \x01(\tR\amessage\"\x9c\x05\n" +
 	"\x0eObjectSnapshot\x12\x1c\n" +
 	"\tnamespace\x18\x01 \x01(\tR\tnamespace\x12\x12\n" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x12\n" +
@@ -944,7 +1498,10 @@ const file_clusteragent_proto_rawDesc = "" +
 	"\vannotations\x18\a \x03(\v20.clusteragent.v1.ObjectSnapshot.AnnotationsEntryR\vannotations\x12:\n" +
 	"\vowner_chain\x18\b \x03(\v2\x19.clusteragent.v1.OwnerRefR\n" +
 	"ownerChain\x12&\n" +
-	"\x0fraw_status_json\x18\t \x01(\tR\rrawStatusJson\x1a9\n" +
+	"\x0fraw_status_json\x18\t \x01(\tR\rrawStatusJson\x12O\n" +
+	"\x12container_statuses\x18\n" +
+	" \x03(\v2 .clusteragent.v1.ContainerStatusR\x11containerStatuses\x12S\n" +
+	"\x13workload_conditions\x18\v \x03(\v2\".clusteragent.v1.WorkloadConditionR\x12workloadConditions\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
@@ -987,14 +1544,43 @@ const file_clusteragent_proto_rawDesc = "" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\"X\n" +
 	"\x19GetObjectSnapshotResponse\x12;\n" +
-	"\bsnapshot\x18\x01 \x01(\v2\x1f.clusteragent.v1.ObjectSnapshotR\bsnapshot2\xa5\x04\n" +
+	"\bsnapshot\x18\x01 \x01(\v2\x1f.clusteragent.v1.ObjectSnapshotR\bsnapshot\"p\n" +
+	"\x10ContainerMetrics\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
+	"\x0ecpu_millicores\x18\x02 \x01(\x03R\rcpuMillicores\x12!\n" +
+	"\fmemory_bytes\x18\x03 \x01(\x03R\vmemoryBytes\"\xb9\x01\n" +
+	"\n" +
+	"PodMetrics\x12\x1c\n" +
+	"\tnamespace\x18\x01 \x01(\tR\tnamespace\x12\x10\n" +
+	"\x03pod\x18\x02 \x01(\tR\x03pod\x12A\n" +
+	"\n" +
+	"containers\x18\x03 \x03(\v2!.clusteragent.v1.ContainerMetricsR\n" +
+	"containers\x128\n" +
+	"\ttimestamp\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\"F\n" +
+	"\x14GetPodMetricsRequest\x12\x1c\n" +
+	"\tnamespace\x18\x01 \x01(\tR\tnamespace\x12\x10\n" +
+	"\x03pod\x18\x02 \x01(\tR\x03pod\"H\n" +
+	"\x15GetPodMetricsResponse\x12/\n" +
+	"\x04pods\x18\x01 \x03(\v2\x1b.clusteragent.v1.PodMetricsR\x04pods\"\x86\x01\n" +
+	"\x17GetContainerLogsRequest\x12\x1c\n" +
+	"\tnamespace\x18\x01 \x01(\tR\tnamespace\x12\x10\n" +
+	"\x03pod\x18\x02 \x01(\tR\x03pod\x12\x1c\n" +
+	"\tcontainer\x18\x03 \x01(\tR\tcontainer\x12\x1d\n" +
+	"\n" +
+	"tail_lines\x18\x04 \x01(\x05R\ttailLines\"^\n" +
+	"\x18GetContainerLogsResponse\x12\x10\n" +
+	"\x03pod\x18\x01 \x01(\tR\x03pod\x12\x1c\n" +
+	"\tcontainer\x18\x02 \x01(\tR\tcontainer\x12\x12\n" +
+	"\x04logs\x18\x03 \x01(\tR\x04logs2\xee\x05\n" +
 	"\x13ClusterAgentService\x12U\n" +
 	"\n" +
 	"ListEvents\x12\".clusteragent.v1.ListEventsRequest\x1a#.clusteragent.v1.ListEventsResponse\x12m\n" +
 	"\x12GetEventsForObject\x12*.clusteragent.v1.GetEventsForObjectRequest\x1a+.clusteragent.v1.GetEventsForObjectResponse\x12p\n" +
 	"\x13GetNamespaceSummary\x12+.clusteragent.v1.GetNamespaceSummaryRequest\x1a,.clusteragent.v1.GetNamespaceSummaryResponse\x12j\n" +
 	"\x11ResolveOwnerChain\x12).clusteragent.v1.ResolveOwnerChainRequest\x1a*.clusteragent.v1.ResolveOwnerChainResponse\x12j\n" +
-	"\x11GetObjectSnapshot\x12).clusteragent.v1.GetObjectSnapshotRequest\x1a*.clusteragent.v1.GetObjectSnapshotResponseB5Z3github.com/0x0BSoD/mcp-k8s/proto/gen/clusteragentpbb\x06proto3"
+	"\x11GetObjectSnapshot\x12).clusteragent.v1.GetObjectSnapshotRequest\x1a*.clusteragent.v1.GetObjectSnapshotResponse\x12g\n" +
+	"\x10GetContainerLogs\x12(.clusteragent.v1.GetContainerLogsRequest\x1a).clusteragent.v1.GetContainerLogsResponse\x12^\n" +
+	"\rGetPodMetrics\x12%.clusteragent.v1.GetPodMetricsRequest\x1a&.clusteragent.v1.GetPodMetricsResponseB5Z3github.com/0x0BSoD/mcp-k8s/proto/gen/clusteragentpbb\x06proto3"
 
 var (
 	file_clusteragent_proto_rawDescOnce sync.Once
@@ -1008,56 +1594,73 @@ func file_clusteragent_proto_rawDescGZIP() []byte {
 	return file_clusteragent_proto_rawDescData
 }
 
-var file_clusteragent_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_clusteragent_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_clusteragent_proto_goTypes = []any{
 	(*OwnerRef)(nil),                    // 0: clusteragent.v1.OwnerRef
 	(*NormalizedEvent)(nil),             // 1: clusteragent.v1.NormalizedEvent
-	(*ObjectSnapshot)(nil),              // 2: clusteragent.v1.ObjectSnapshot
-	(*ListEventsRequest)(nil),           // 3: clusteragent.v1.ListEventsRequest
-	(*ListEventsResponse)(nil),          // 4: clusteragent.v1.ListEventsResponse
-	(*GetEventsForObjectRequest)(nil),   // 5: clusteragent.v1.GetEventsForObjectRequest
-	(*GetEventsForObjectResponse)(nil),  // 6: clusteragent.v1.GetEventsForObjectResponse
-	(*GetNamespaceSummaryRequest)(nil),  // 7: clusteragent.v1.GetNamespaceSummaryRequest
-	(*NamespaceEventGroup)(nil),         // 8: clusteragent.v1.NamespaceEventGroup
-	(*GetNamespaceSummaryResponse)(nil), // 9: clusteragent.v1.GetNamespaceSummaryResponse
-	(*ResolveOwnerChainRequest)(nil),    // 10: clusteragent.v1.ResolveOwnerChainRequest
-	(*ResolveOwnerChainResponse)(nil),   // 11: clusteragent.v1.ResolveOwnerChainResponse
-	(*GetObjectSnapshotRequest)(nil),    // 12: clusteragent.v1.GetObjectSnapshotRequest
-	(*GetObjectSnapshotResponse)(nil),   // 13: clusteragent.v1.GetObjectSnapshotResponse
-	nil,                                 // 14: clusteragent.v1.ObjectSnapshot.LabelsEntry
-	nil,                                 // 15: clusteragent.v1.ObjectSnapshot.AnnotationsEntry
-	(*timestamppb.Timestamp)(nil),       // 16: google.protobuf.Timestamp
+	(*ContainerStatus)(nil),             // 2: clusteragent.v1.ContainerStatus
+	(*WorkloadCondition)(nil),           // 3: clusteragent.v1.WorkloadCondition
+	(*ObjectSnapshot)(nil),              // 4: clusteragent.v1.ObjectSnapshot
+	(*ListEventsRequest)(nil),           // 5: clusteragent.v1.ListEventsRequest
+	(*ListEventsResponse)(nil),          // 6: clusteragent.v1.ListEventsResponse
+	(*GetEventsForObjectRequest)(nil),   // 7: clusteragent.v1.GetEventsForObjectRequest
+	(*GetEventsForObjectResponse)(nil),  // 8: clusteragent.v1.GetEventsForObjectResponse
+	(*GetNamespaceSummaryRequest)(nil),  // 9: clusteragent.v1.GetNamespaceSummaryRequest
+	(*NamespaceEventGroup)(nil),         // 10: clusteragent.v1.NamespaceEventGroup
+	(*GetNamespaceSummaryResponse)(nil), // 11: clusteragent.v1.GetNamespaceSummaryResponse
+	(*ResolveOwnerChainRequest)(nil),    // 12: clusteragent.v1.ResolveOwnerChainRequest
+	(*ResolveOwnerChainResponse)(nil),   // 13: clusteragent.v1.ResolveOwnerChainResponse
+	(*GetObjectSnapshotRequest)(nil),    // 14: clusteragent.v1.GetObjectSnapshotRequest
+	(*GetObjectSnapshotResponse)(nil),   // 15: clusteragent.v1.GetObjectSnapshotResponse
+	(*ContainerMetrics)(nil),            // 16: clusteragent.v1.ContainerMetrics
+	(*PodMetrics)(nil),                  // 17: clusteragent.v1.PodMetrics
+	(*GetPodMetricsRequest)(nil),        // 18: clusteragent.v1.GetPodMetricsRequest
+	(*GetPodMetricsResponse)(nil),       // 19: clusteragent.v1.GetPodMetricsResponse
+	(*GetContainerLogsRequest)(nil),     // 20: clusteragent.v1.GetContainerLogsRequest
+	(*GetContainerLogsResponse)(nil),    // 21: clusteragent.v1.GetContainerLogsResponse
+	nil,                                 // 22: clusteragent.v1.ObjectSnapshot.LabelsEntry
+	nil,                                 // 23: clusteragent.v1.ObjectSnapshot.AnnotationsEntry
+	(*timestamppb.Timestamp)(nil),       // 24: google.protobuf.Timestamp
 }
 var file_clusteragent_proto_depIdxs = []int32{
 	0,  // 0: clusteragent.v1.NormalizedEvent.owner_chain:type_name -> clusteragent.v1.OwnerRef
-	16, // 1: clusteragent.v1.NormalizedEvent.first_seen:type_name -> google.protobuf.Timestamp
-	16, // 2: clusteragent.v1.NormalizedEvent.last_seen:type_name -> google.protobuf.Timestamp
-	14, // 3: clusteragent.v1.ObjectSnapshot.labels:type_name -> clusteragent.v1.ObjectSnapshot.LabelsEntry
-	15, // 4: clusteragent.v1.ObjectSnapshot.annotations:type_name -> clusteragent.v1.ObjectSnapshot.AnnotationsEntry
+	24, // 1: clusteragent.v1.NormalizedEvent.first_seen:type_name -> google.protobuf.Timestamp
+	24, // 2: clusteragent.v1.NormalizedEvent.last_seen:type_name -> google.protobuf.Timestamp
+	22, // 3: clusteragent.v1.ObjectSnapshot.labels:type_name -> clusteragent.v1.ObjectSnapshot.LabelsEntry
+	23, // 4: clusteragent.v1.ObjectSnapshot.annotations:type_name -> clusteragent.v1.ObjectSnapshot.AnnotationsEntry
 	0,  // 5: clusteragent.v1.ObjectSnapshot.owner_chain:type_name -> clusteragent.v1.OwnerRef
-	16, // 6: clusteragent.v1.ListEventsRequest.since:type_name -> google.protobuf.Timestamp
-	1,  // 7: clusteragent.v1.ListEventsResponse.events:type_name -> clusteragent.v1.NormalizedEvent
-	1,  // 8: clusteragent.v1.GetEventsForObjectResponse.events:type_name -> clusteragent.v1.NormalizedEvent
-	16, // 9: clusteragent.v1.GetNamespaceSummaryRequest.since:type_name -> google.protobuf.Timestamp
-	16, // 10: clusteragent.v1.NamespaceEventGroup.last_seen:type_name -> google.protobuf.Timestamp
-	8,  // 11: clusteragent.v1.GetNamespaceSummaryResponse.groups:type_name -> clusteragent.v1.NamespaceEventGroup
-	0,  // 12: clusteragent.v1.ResolveOwnerChainResponse.chain:type_name -> clusteragent.v1.OwnerRef
-	2,  // 13: clusteragent.v1.GetObjectSnapshotResponse.snapshot:type_name -> clusteragent.v1.ObjectSnapshot
-	3,  // 14: clusteragent.v1.ClusterAgentService.ListEvents:input_type -> clusteragent.v1.ListEventsRequest
-	5,  // 15: clusteragent.v1.ClusterAgentService.GetEventsForObject:input_type -> clusteragent.v1.GetEventsForObjectRequest
-	7,  // 16: clusteragent.v1.ClusterAgentService.GetNamespaceSummary:input_type -> clusteragent.v1.GetNamespaceSummaryRequest
-	10, // 17: clusteragent.v1.ClusterAgentService.ResolveOwnerChain:input_type -> clusteragent.v1.ResolveOwnerChainRequest
-	12, // 18: clusteragent.v1.ClusterAgentService.GetObjectSnapshot:input_type -> clusteragent.v1.GetObjectSnapshotRequest
-	4,  // 19: clusteragent.v1.ClusterAgentService.ListEvents:output_type -> clusteragent.v1.ListEventsResponse
-	6,  // 20: clusteragent.v1.ClusterAgentService.GetEventsForObject:output_type -> clusteragent.v1.GetEventsForObjectResponse
-	9,  // 21: clusteragent.v1.ClusterAgentService.GetNamespaceSummary:output_type -> clusteragent.v1.GetNamespaceSummaryResponse
-	11, // 22: clusteragent.v1.ClusterAgentService.ResolveOwnerChain:output_type -> clusteragent.v1.ResolveOwnerChainResponse
-	13, // 23: clusteragent.v1.ClusterAgentService.GetObjectSnapshot:output_type -> clusteragent.v1.GetObjectSnapshotResponse
-	19, // [19:24] is the sub-list for method output_type
-	14, // [14:19] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	2,  // 6: clusteragent.v1.ObjectSnapshot.container_statuses:type_name -> clusteragent.v1.ContainerStatus
+	3,  // 7: clusteragent.v1.ObjectSnapshot.workload_conditions:type_name -> clusteragent.v1.WorkloadCondition
+	24, // 8: clusteragent.v1.ListEventsRequest.since:type_name -> google.protobuf.Timestamp
+	1,  // 9: clusteragent.v1.ListEventsResponse.events:type_name -> clusteragent.v1.NormalizedEvent
+	1,  // 10: clusteragent.v1.GetEventsForObjectResponse.events:type_name -> clusteragent.v1.NormalizedEvent
+	24, // 11: clusteragent.v1.GetNamespaceSummaryRequest.since:type_name -> google.protobuf.Timestamp
+	24, // 12: clusteragent.v1.NamespaceEventGroup.last_seen:type_name -> google.protobuf.Timestamp
+	10, // 13: clusteragent.v1.GetNamespaceSummaryResponse.groups:type_name -> clusteragent.v1.NamespaceEventGroup
+	0,  // 14: clusteragent.v1.ResolveOwnerChainResponse.chain:type_name -> clusteragent.v1.OwnerRef
+	4,  // 15: clusteragent.v1.GetObjectSnapshotResponse.snapshot:type_name -> clusteragent.v1.ObjectSnapshot
+	16, // 16: clusteragent.v1.PodMetrics.containers:type_name -> clusteragent.v1.ContainerMetrics
+	24, // 17: clusteragent.v1.PodMetrics.timestamp:type_name -> google.protobuf.Timestamp
+	17, // 18: clusteragent.v1.GetPodMetricsResponse.pods:type_name -> clusteragent.v1.PodMetrics
+	5,  // 19: clusteragent.v1.ClusterAgentService.ListEvents:input_type -> clusteragent.v1.ListEventsRequest
+	7,  // 20: clusteragent.v1.ClusterAgentService.GetEventsForObject:input_type -> clusteragent.v1.GetEventsForObjectRequest
+	9,  // 21: clusteragent.v1.ClusterAgentService.GetNamespaceSummary:input_type -> clusteragent.v1.GetNamespaceSummaryRequest
+	12, // 22: clusteragent.v1.ClusterAgentService.ResolveOwnerChain:input_type -> clusteragent.v1.ResolveOwnerChainRequest
+	14, // 23: clusteragent.v1.ClusterAgentService.GetObjectSnapshot:input_type -> clusteragent.v1.GetObjectSnapshotRequest
+	20, // 24: clusteragent.v1.ClusterAgentService.GetContainerLogs:input_type -> clusteragent.v1.GetContainerLogsRequest
+	18, // 25: clusteragent.v1.ClusterAgentService.GetPodMetrics:input_type -> clusteragent.v1.GetPodMetricsRequest
+	6,  // 26: clusteragent.v1.ClusterAgentService.ListEvents:output_type -> clusteragent.v1.ListEventsResponse
+	8,  // 27: clusteragent.v1.ClusterAgentService.GetEventsForObject:output_type -> clusteragent.v1.GetEventsForObjectResponse
+	11, // 28: clusteragent.v1.ClusterAgentService.GetNamespaceSummary:output_type -> clusteragent.v1.GetNamespaceSummaryResponse
+	13, // 29: clusteragent.v1.ClusterAgentService.ResolveOwnerChain:output_type -> clusteragent.v1.ResolveOwnerChainResponse
+	15, // 30: clusteragent.v1.ClusterAgentService.GetObjectSnapshot:output_type -> clusteragent.v1.GetObjectSnapshotResponse
+	21, // 31: clusteragent.v1.ClusterAgentService.GetContainerLogs:output_type -> clusteragent.v1.GetContainerLogsResponse
+	19, // 32: clusteragent.v1.ClusterAgentService.GetPodMetrics:output_type -> clusteragent.v1.GetPodMetricsResponse
+	26, // [26:33] is the sub-list for method output_type
+	19, // [19:26] is the sub-list for method input_type
+	19, // [19:19] is the sub-list for extension type_name
+	19, // [19:19] is the sub-list for extension extendee
+	0,  // [0:19] is the sub-list for field type_name
 }
 
 func init() { file_clusteragent_proto_init() }
@@ -1071,7 +1674,7 @@ func file_clusteragent_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_clusteragent_proto_rawDesc), len(file_clusteragent_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

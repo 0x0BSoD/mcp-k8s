@@ -24,6 +24,8 @@ const (
 	ClusterAgentService_GetNamespaceSummary_FullMethodName = "/clusteragent.v1.ClusterAgentService/GetNamespaceSummary"
 	ClusterAgentService_ResolveOwnerChain_FullMethodName   = "/clusteragent.v1.ClusterAgentService/ResolveOwnerChain"
 	ClusterAgentService_GetObjectSnapshot_FullMethodName   = "/clusteragent.v1.ClusterAgentService/GetObjectSnapshot"
+	ClusterAgentService_GetContainerLogs_FullMethodName    = "/clusteragent.v1.ClusterAgentService/GetContainerLogs"
+	ClusterAgentService_GetPodMetrics_FullMethodName       = "/clusteragent.v1.ClusterAgentService/GetPodMetrics"
 )
 
 // ClusterAgentServiceClient is the client API for ClusterAgentService service.
@@ -40,6 +42,10 @@ type ClusterAgentServiceClient interface {
 	ResolveOwnerChain(ctx context.Context, in *ResolveOwnerChainRequest, opts ...grpc.CallOption) (*ResolveOwnerChainResponse, error)
 	// Return a snapshot of an object's current state.
 	GetObjectSnapshot(ctx context.Context, in *GetObjectSnapshotRequest, opts ...grpc.CallOption) (*GetObjectSnapshotResponse, error)
+	// Return the last N log lines for a container.
+	GetContainerLogs(ctx context.Context, in *GetContainerLogsRequest, opts ...grpc.CallOption) (*GetContainerLogsResponse, error)
+	// Return CPU/memory usage for pods via metrics-server.
+	GetPodMetrics(ctx context.Context, in *GetPodMetricsRequest, opts ...grpc.CallOption) (*GetPodMetricsResponse, error)
 }
 
 type clusterAgentServiceClient struct {
@@ -100,6 +106,26 @@ func (c *clusterAgentServiceClient) GetObjectSnapshot(ctx context.Context, in *G
 	return out, nil
 }
 
+func (c *clusterAgentServiceClient) GetContainerLogs(ctx context.Context, in *GetContainerLogsRequest, opts ...grpc.CallOption) (*GetContainerLogsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetContainerLogsResponse)
+	err := c.cc.Invoke(ctx, ClusterAgentService_GetContainerLogs_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *clusterAgentServiceClient) GetPodMetrics(ctx context.Context, in *GetPodMetricsRequest, opts ...grpc.CallOption) (*GetPodMetricsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPodMetricsResponse)
+	err := c.cc.Invoke(ctx, ClusterAgentService_GetPodMetrics_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ClusterAgentServiceServer is the server API for ClusterAgentService service.
 // All implementations must embed UnimplementedClusterAgentServiceServer
 // for forward compatibility.
@@ -114,6 +140,10 @@ type ClusterAgentServiceServer interface {
 	ResolveOwnerChain(context.Context, *ResolveOwnerChainRequest) (*ResolveOwnerChainResponse, error)
 	// Return a snapshot of an object's current state.
 	GetObjectSnapshot(context.Context, *GetObjectSnapshotRequest) (*GetObjectSnapshotResponse, error)
+	// Return the last N log lines for a container.
+	GetContainerLogs(context.Context, *GetContainerLogsRequest) (*GetContainerLogsResponse, error)
+	// Return CPU/memory usage for pods via metrics-server.
+	GetPodMetrics(context.Context, *GetPodMetricsRequest) (*GetPodMetricsResponse, error)
 	mustEmbedUnimplementedClusterAgentServiceServer()
 }
 
@@ -138,6 +168,12 @@ func (UnimplementedClusterAgentServiceServer) ResolveOwnerChain(context.Context,
 }
 func (UnimplementedClusterAgentServiceServer) GetObjectSnapshot(context.Context, *GetObjectSnapshotRequest) (*GetObjectSnapshotResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetObjectSnapshot not implemented")
+}
+func (UnimplementedClusterAgentServiceServer) GetContainerLogs(context.Context, *GetContainerLogsRequest) (*GetContainerLogsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetContainerLogs not implemented")
+}
+func (UnimplementedClusterAgentServiceServer) GetPodMetrics(context.Context, *GetPodMetricsRequest) (*GetPodMetricsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPodMetrics not implemented")
 }
 func (UnimplementedClusterAgentServiceServer) mustEmbedUnimplementedClusterAgentServiceServer() {}
 func (UnimplementedClusterAgentServiceServer) testEmbeddedByValue()                             {}
@@ -250,6 +286,42 @@ func _ClusterAgentService_GetObjectSnapshot_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ClusterAgentService_GetContainerLogs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetContainerLogsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClusterAgentServiceServer).GetContainerLogs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ClusterAgentService_GetContainerLogs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClusterAgentServiceServer).GetContainerLogs(ctx, req.(*GetContainerLogsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ClusterAgentService_GetPodMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPodMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClusterAgentServiceServer).GetPodMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ClusterAgentService_GetPodMetrics_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClusterAgentServiceServer).GetPodMetrics(ctx, req.(*GetPodMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ClusterAgentService_ServiceDesc is the grpc.ServiceDesc for ClusterAgentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -276,6 +348,14 @@ var ClusterAgentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetObjectSnapshot",
 			Handler:    _ClusterAgentService_GetObjectSnapshot_Handler,
+		},
+		{
+			MethodName: "GetContainerLogs",
+			Handler:    _ClusterAgentService_GetContainerLogs_Handler,
+		},
+		{
+			MethodName: "GetPodMetrics",
+			Handler:    _ClusterAgentService_GetPodMetrics_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

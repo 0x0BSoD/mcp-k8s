@@ -1,7 +1,11 @@
 package coordinator
 
 import (
+	"encoding/json"
 	"fmt"
+	"log/slog"
+	"os"
+	"path/filepath"
 	"sync"
 
 	pb "github.com/0x0BSoD/mcp-k8s/proto/gen/clusteragentpb"
@@ -12,24 +16,54 @@ import (
 // ClusterEntry holds metadata and a lazily-created gRPC connection for one
 // cluster agent.
 type ClusterEntry struct {
-	ClusterName  string
-	GRPCEndpoint string
-	Labels       map[string]string
+	ClusterName  string            `json:"cluster_name"`
+	GRPCEndpoint string            `json:"grpc_endpoint"`
+	Labels       map[string]string `json:"labels,omitempty"`
 }
 
-// Registry is an in-memory store of cluster agents.
+// Registry is a store of cluster agents backed by an optional JSON file.
 // Connections are created on first use and reused afterwards.
 type Registry struct {
-	mu      sync.RWMutex
-	entries map[string]ClusterEntry
-	conns   map[string]*grpc.ClientConn
+	mu       sync.RWMutex
+	entries  map[string]ClusterEntry
+	conns    map[string]*grpc.ClientConn
+	filePath string // empty = in-memory only
 }
 
-func NewRegistry() *Registry {
+func NewRegistry(filePath string) *Registry {
 	return &Registry{
-		entries: make(map[string]ClusterEntry),
-		conns:   make(map[string]*grpc.ClientConn),
+		entries:  make(map[string]ClusterEntry),
+		conns:    make(map[string]*grpc.ClientConn),
+		filePath: filePath,
 	}
+}
+
+// Load reads persisted registrations from the registry file.
+// Safe to call when the file does not exist yet.
+func (r *Registry) Load() error {
+	if r.filePath == "" {
+		return nil
+	}
+	data, err := os.ReadFile(r.filePath)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("read registry file %s: %w", r.filePath, err)
+	}
+
+	var entries []ClusterEntry
+	if err := json.Unmarshal(data, &entries); err != nil {
+		return fmt.Errorf("parse registry file %s: %w", r.filePath, err)
+	}
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	for _, e := range entries {
+		r.entries[e.ClusterName] = e
+	}
+	slog.Info("registry loaded", "clusters", len(entries), "file", r.filePath)
+	return nil
 }
 
 // Register adds or replaces a cluster entry.
@@ -43,6 +77,7 @@ func (r *Registry) Register(entry ClusterEntry) {
 		delete(r.conns, entry.ClusterName)
 	}
 	r.entries[entry.ClusterName] = entry
+	r.save()
 }
 
 // Unregister removes a cluster and closes its connection.
@@ -55,6 +90,7 @@ func (r *Registry) Unregister(clusterName string) {
 		delete(r.conns, clusterName)
 	}
 	delete(r.entries, clusterName)
+	r.save()
 }
 
 // List returns all registered cluster entries.
@@ -93,4 +129,48 @@ func (r *Registry) Client(clusterName string) (pb.ClusterAgentServiceClient, err
 	}
 	r.conns[clusterName] = conn
 	return pb.NewClusterAgentServiceClient(conn), nil
+}
+
+// save writes current entries to the registry file atomically (temp + rename).
+// Must be called with r.mu held for writing.
+func (r *Registry) save() {
+	if r.filePath == "" {
+		return
+	}
+
+	entries := make([]ClusterEntry, 0, len(r.entries))
+	for _, e := range r.entries {
+		entries = append(entries, e)
+	}
+
+	data, err := json.MarshalIndent(entries, "", "  ")
+	if err != nil {
+		slog.Error("registry save: marshal failed", "err", err)
+		return
+	}
+
+	dir := filepath.Dir(r.filePath)
+	tmp, err := os.CreateTemp(dir, ".registry-*.tmp")
+	if err != nil {
+		slog.Error("registry save: create temp file failed", "err", err)
+		return
+	}
+	tmpName := tmp.Name()
+
+	if _, err := tmp.Write(data); err != nil {
+		_ = tmp.Close()
+		_ = os.Remove(tmpName)
+		slog.Error("registry save: write failed", "err", err)
+		return
+	}
+	if err := tmp.Close(); err != nil {
+		_ = os.Remove(tmpName)
+		slog.Error("registry save: close failed", "err", err)
+		return
+	}
+	if err := os.Rename(tmpName, r.filePath); err != nil {
+		_ = os.Remove(tmpName)
+		slog.Error("registry save: rename failed", "err", err)
+		return
+	}
 }

@@ -11,6 +11,8 @@ const (
 	MethodGetNamespaceSummary Method = "GetNamespaceSummary"
 	MethodResolveOwnerChain   Method = "ResolveOwnerChain"
 	MethodGetObjectSnapshot   Method = "GetObjectSnapshot"
+	MethodGetContainerLogs    Method = "GetContainerLogs"
+	MethodGetPodMetrics       Method = "GetPodMetrics"
 )
 
 // Step is a single call to be made against the cluster agent.
@@ -20,7 +22,9 @@ type Step struct {
 	Method    Method
 	Namespace string
 	Kind      string    // GetEventsForObject, ResolveOwnerChain, GetObjectSnapshot
-	Name      string    // GetEventsForObject, ResolveOwnerChain, GetObjectSnapshot
+	Name      string    // GetEventsForObject, ResolveOwnerChain, GetObjectSnapshot; pod name for GetContainerLogs
+	Container string    // GetContainerLogs
+	TailLines int32     // GetContainerLogs; 0 = default
 	Reason    string    // ListEvents filter
 	Since     time.Time // ListEvents, GetNamespaceSummary
 	Limit     int       // ListEvents

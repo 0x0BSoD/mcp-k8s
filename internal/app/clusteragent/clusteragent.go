@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
+	metricsv1beta1 "k8s.io/metrics/pkg/client/clientset/versioned"
 )
 
 // ClusterAgent is the top-level application struct for the in-cluster agent.
@@ -42,6 +43,13 @@ func (a *ClusterAgent) Run(ctx context.Context) error {
 		return fmt.Errorf("k8s client: %w", err)
 	}
 
+	metricsClient, err := metricsv1beta1.NewForConfig(restCfg)
+	if err != nil {
+		// metrics-server may not be installed; log and continue with nil client
+		slog.Warn("metrics client unavailable, pod metrics disabled", "err", err)
+		metricsClient = nil
+	}
+
 	// ── Core components ────────────────────────────────────────────────────
 	eventStore := store.New(a.cfg.StoreMaxSize)
 	enricher := enrichment.New(k8sClient)
@@ -64,7 +72,7 @@ func (a *ClusterAgent) Run(ctx context.Context) error {
 	}
 
 	srv := grpc.NewServer()
-	pb.RegisterClusterAgentServiceServer(srv, newGRPCServer(eventStore, enricher))
+	pb.RegisterClusterAgentServiceServer(srv, newGRPCServer(eventStore, enricher, k8sClient, metricsClient))
 
 	// Standard gRPC health protocol — required for Kubernetes gRPC probes.
 	healthSrv := health.NewServer()

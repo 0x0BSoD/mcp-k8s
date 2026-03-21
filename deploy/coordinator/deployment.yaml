@@ -26,6 +26,16 @@ spec:
           env:
             - name: MCP_HTTP_ADDR
               value: ":8080"
+            # MCP_REGISTRY_TOKEN: shared secret for POST/DELETE /registry.
+            # Uncomment and set via a Secret to enable auth.
+            # - name: MCP_REGISTRY_TOKEN
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: mcp-coordinator
+            #       key: registry-token
+            # MCP_REGISTRY_FILE: path for persistent registry state.
+            # - name: MCP_REGISTRY_FILE
+            #   value: "/var/lib/mcp/registry.json"
           resources:
             requests:
               cpu: 50m
